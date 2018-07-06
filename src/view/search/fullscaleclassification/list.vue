@@ -30,7 +30,7 @@
           <Button type="warning" icon="refresh" size="small">重置</Button>
         </Col>
       </Row>
-      <Table :loading="loading" :data="tableData1" :columns="tableColumns1" stripe border ref="selection" @on-select="handlerSelected" @on-select-all="handlerSelected"></Table>
+      <Table :loading="loading" :data="tableData1" :columns="tableColumns1" stripe border ref="selection" @on-select-change="handlerSelected" @on-select-all="handlerSelected"></Table>
       <div style="margin: 10px;overflow: hidden">
         <div style="float: right;">
           <Page :total="100" :current="1" @on-change="changePage"></Page>

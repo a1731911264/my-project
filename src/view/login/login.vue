@@ -56,9 +56,20 @@ export default {
     }
   },
   mounted () {
+    let other = this
+    document.onkeydown = function (event) {
+      if (event.keyCode === 13) other.login('loginForm')
+    }
+  },
+  destroyed () {
+    document.onkeydown = function () {
+    }
   },
   methods: {
     login (name) {
+      this.$Notice.error({
+        title: '账号或密码错误'
+      })
       this.$refs[name].validate((valid) => {
         if (valid) {
           this.loading = true
