@@ -67,9 +67,6 @@ export default {
   },
   methods: {
     login (name) {
-      this.$Notice.error({
-        title: '账号或密码错误'
-      })
       this.$refs[name].validate((valid) => {
         if (valid) {
           this.loading = true
@@ -78,9 +75,10 @@ export default {
             const rules = [
               {id: 1, name: '图搜管理', icon: 'ios-home', childPaths: [{id: 11, name: '全量分类管理', path: '/picture-search/full-classification-list'}, {id: 12, name: '相似分类管理', path: '/picture-search/similar-classification-list'}, {id: 13, name: '搜图结果管理', path: '/picture-search/picture-search-list'}, {id: 14, name: '反馈意见管理', path: '/picture-search/feedback-list'}], path: ''},
               {id: 2, name: '统计分析', icon: 'ios-pricetag', childPaths: [{id: 21, name: '交易记录', path: '/balance/trade'}, {id: 22, name: '花销分析', path: '/cost-analysis'}], path: ''},
-              {id: 3, name: '权限管理', icon: 'ios-paw', childPaths: [], path: '/gift'}
+              {id: 3, name: '权限管理', icon: 'ios-paw', childPaths: [], path: '/gift'},
+              {id: 4, name: '定位导航', icon: 'ios-location', childPaths: [{id: 41, name: '百度地图', path: '/map/baidu-map'}], path: ''}
             ]
-            sessionStorage.setItem('token', this.loginForm.suername + this.loginForm.password)
+            sessionStorage.setItem('token', this.loginForm.username + '_' + this.loginForm.password)
             if (this.loginForm.username === 'admin') {
               sessionStorage.setItem('rules', JSON.stringify(rules))
             } else {

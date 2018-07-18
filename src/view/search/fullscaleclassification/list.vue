@@ -7,9 +7,9 @@
     <Content :style="{padding: '24px', minHeight: '280px', background: '#fff'}">
       <Row style="margin-bottom: 6px">
         <Col span="3">
-          <Button type="primary" icon="plus" title="新增" size="small" style="margin-right: 5px"></Button>
+          <Button type="primary" icon="plus" title="新增" size="small" style="margin-right: 5px" v-on:click="addData()"></Button>
           <Button type="error" icon="trash-b" title="批量删除" size="small" style="margin-right: 5px" v-on:click="showDeleteModal()"></Button>
-          <Button type="info" icon="arrow-up-a" title="导入" size="small"></Button>
+          <Button type="info" icon="arrow-up-a" title="导入" size="small" @click="showUploadModal()"></Button>
         </Col>
         <Col span="6">
           <strong style="padding-bottom: 3px;margin-right: 10px">分类ID：</strong><Input style="width: 70%" type="text" size="small" v-model="searchForm.categoryId" placeholder="输入分类ID"></Input>
@@ -26,11 +26,11 @@
           </Select>
         </Col>
         <Col span="3">
-          <Button type="success" icon="search" size="small" style="margin-right: 2px;margin-left: 10px">查询</Button>
-          <Button type="warning" icon="refresh" size="small">重置</Button>
+          <Button type="success" icon="search" size="small" style="margin-right: 2px;margin-left: 10px" v-on:click="search()">查询</Button>
+          <Button type="warning" icon="refresh" size="small" v-on:click="reset()">重置</Button>
         </Col>
       </Row>
-      <Table :loading="loading" :data="tableData1" :columns="tableColumns1" stripe border ref="selection" @on-select-change="handlerSelected" @on-select-all="handlerSelected"></Table>
+      <Table :loading="loading" :data="tableData1" :columns="tableColumns1" stripe border ref="selection" @on-selection-change="handlerSelected" @on-select-all="handlerSelected"></Table>
       <div style="margin: 10px;overflow: hidden">
         <div style="float: right;">
           <Page :total="100" :current="1" @on-change="changePage"></Page>
@@ -44,6 +44,49 @@
       width="300">
       <strong style="text-align: center">您确定要删除选中的数据吗？</strong>
     </Modal>
+    <Modal
+      :ok-text="modalText"
+      :loading="modalLoading"
+      @on-ok="add()"
+      @on-cancel="clearForm('addOrEditForm')"
+      v-model="addOrEditModel"
+      title="新增分类"
+      width="420">
+      <Form ref="addOrEditForm" :model="addOrEditForm" :rules="addOrEditFormValidate" :label-width="100">
+        <FormItem label="分类ID：" prop="portrayal">
+          <Input v-model="addOrEditForm.portrayal" placeholder="请输入分类ID..."></Input>
+        </FormItem>
+        <FormItem label="分类名称：" prop="name">
+          <Input v-model="addOrEditForm.name" placeholder="请输入分类名称..."></Input>
+        </FormItem>
+        <FormItem label="状态：" prop="status">
+          <Select v-model="addOrEditForm.status" placeholder="请先择分类状态">
+            <Option value="1">通过</Option>
+            <Option value="0">不通过</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="分类描述：">
+          <Input v-model="addOrEditForm.people" type="textarea" placeholder="请输入分类描述..."></Input>
+        </FormItem>
+      </Form>
+    </Modal>
+    <Modal
+      ok-text="关闭"
+      v-model="uploadModal"
+      title="操作提醒"
+      width="300"
+    @on-ok="clearFiles"
+    @on-cancel="clearFiles">
+      <Upload
+        ref="upload"
+        type="drag"
+        action="//jsonplaceholder.typicode.com/posts/">
+        <div style="padding: 20px 0">
+          <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
+          <p>点击或拖拽文件到此处进行上传</p>
+        </div>
+      </Upload>
+    </Modal>
   </Layout>
 </template>
 
@@ -51,6 +94,30 @@
 export default {
   data () {
     return {
+      loadingStatus: false,
+      file: null,
+      uploadModal: false,
+      addOrEditModel: false,
+      addOrEditForm: {
+        name: '',
+        status: '',
+        portrayal: '',
+        people: ''
+      },
+      modalLoading: true,
+      modalText: '保存',
+      showMessage: true,
+      addOrEditFormValidate: {
+        name: [
+          { required: true, message: '请输入分类名称...', trigger: 'blur' }
+        ],
+        portrayal: [
+          { required: true, message: '请输入分类ID...', trigger: 'blur' }
+        ],
+        status: [
+          { required: true, message: '请选择分类状态...', trigger: 'change' }
+        ]
+      },
       searchForm: {
         categoryId: '',
         name: '',
@@ -166,6 +233,11 @@ export default {
     setTimeout(() => { this.loading = false }, 1000)
   },
   methods: {
+    addData () {
+      this.clearForm('addOrEditForm')
+      this.modalText = '保存'
+      this.addOrEditModel = true
+    },
     mockTableData1 () {
       let data = []
       for (let i = 0; i < 10; i++) {
@@ -229,6 +301,55 @@ export default {
         }
         this.loading = false
       }, 1000)
+    },
+    add () {
+      this.modalLoading = false
+      this.$refs['addOrEditForm'].validate((valid) => {
+        if (valid) {
+          this.modalText = '正在提交'
+          this.modalLoading = true
+          this.loading = true
+          setTimeout(() => {
+            if (Math.floor(Math.random() * 10 + 1) % 2 !== 0) {
+              this.$Message.success('保存成功！')
+              this.modalLoading = false
+              this.addOrEditModel = false
+              this.$refs['addOrEditForm'].resetFields()
+            } else {
+              this.$Message.error('保存失败！')
+              this.modalLoading = false
+              this.modalText = '保存'
+            }
+            this.$nextTick(() => {
+              this.modalLoading = true
+            })
+            this.loading = false
+          }, 1000)
+        } else {
+          this.$nextTick(() => {
+            this.modalLoading = true
+          })
+        }
+      })
+    },
+    showUploadModal () {
+      this.uploadModal = true
+    },
+    clearFiles () {
+      this.$refs.upload.clearFiles()
+    },
+    clearForm (name) {
+      this.$refs[name].resetFields()
+    },
+    reset () {
+      this.searchForm.categoryId = ''
+      this.searchForm.status = ''
+      this.searchForm.name = ''
+      this.$Message.info('查询条件已重置！')
+    },
+    search () {
+      this.loading = true
+      setTimeout(() => { this.loading = false }, 1000)
     }
   }
 }

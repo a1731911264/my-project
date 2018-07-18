@@ -34,15 +34,28 @@ let router = new Router({
         {path: 'picture-search-list', name: 'picture-search-list', component: resolve => require(['../view/search/picresult/list.vue'], resolve)},
         {path: 'feedback-list', name: 'feedback-list', component: resolve => require(['../view/search/feedback/list.vue'], resolve)}
       ]
+    },
+    {
+      path: '/map',
+      name: 'map',
+      component: Index,
+      redirect: 'noredirect',
+      children: [
+        {path: 'baidu-map', name: 'baidu-map', component: resolve => require(['../view/map/baiduMap.vue'], resolve)}
+      ]
     }
   ]
 })
 router.beforeEach((to, from, next) => {
+  let user = window.sessionStorage.getItem('token')
   if (to.path.startsWith('/login')) {
-    next()
+    if (user !== 'null' && user != null) {
+      next({path: '/main'})
+    } else {
+      next()
+    }
   } else {
-    let user = window.sessionStorage.getItem('token')
-    if (!user) {
+    if (user === 'null' || user == null) {
       next({path: '/login'})
     } else {
       next()
