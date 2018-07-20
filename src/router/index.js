@@ -11,7 +11,7 @@ let router = new Router({
       name: 'index',
       redirect: '/main',
       component: resolve => require(['../view/index.vue'], resolve),
-      children: [{path: 'main', name: 'main', meta: {'keepAlive': true}, component: resolve => require(['../view/main.vue'], resolve)}]
+      children: [{path: 'main', name: 'main', meta: {'keepAlive': true, title: '首页'}, component: resolve => require(['../view/main.vue'], resolve)}]
     },
     {
       path: '/login',
@@ -29,10 +29,10 @@ let router = new Router({
       name: 'picture-search',
       component: Index,
       redirect: 'noredirect',
-      children: [{path: 'full-classification-list', name: 'full-classification-list', component: resolve => require(['../view/search/fullscaleclassification/list.vue'], resolve)},
-        {path: 'similar-classification-list', name: 'similar-classification-list', component: resolve => require(['../view/search/similarclassification/list.vue'], resolve)},
-        {path: 'picture-search-list', name: 'picture-search-list', component: resolve => require(['../view/search/picresult/list.vue'], resolve)},
-        {path: 'feedback-list', name: 'feedback-list', component: resolve => require(['../view/search/feedback/list.vue'], resolve)}
+      children: [{path: 'full-classification-list', meta: {title: '全量分类'}, name: 'full-classification-list', component: resolve => require(['../view/search/fullscaleclassification/list.vue'], resolve)},
+        {path: 'similar-classification-list', meta: {title: '相似分类'}, name: 'similar-classification-list', component: resolve => require(['../view/search/similarclassification/list.vue'], resolve)},
+        {path: 'picture-search-list', meta: {title: '搜图结果'}, name: 'picture-search-list', component: resolve => require(['../view/search/picresult/list.vue'], resolve)},
+        {path: 'feedback-list', meta: {title: '反馈意见'}, name: 'feedback-list', component: resolve => require(['../view/search/feedback/list.vue'], resolve)}
       ]
     },
     {
@@ -41,7 +41,7 @@ let router = new Router({
       component: Index,
       redirect: 'noredirect',
       children: [
-        {path: 'baidu-map', name: 'baidu-map', component: resolve => require(['../view/map/baiduMap.vue'], resolve)}
+        {path: 'baidu-map', meta: {title: '百度地图'}, name: 'baidu-map', component: resolve => require(['../view/map/baiduMap.vue'], resolve)}
       ]
     }
   ]

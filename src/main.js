@@ -7,6 +7,7 @@ import router from './router'
 import iView from 'iview'
 import 'iview/dist/styles/iview.css'
 import axios from 'axios'
+import store from './strore/store.js'
 
 Vue.config.productionTip = false
 Vue.use(VueRouter)
@@ -16,6 +17,7 @@ Vue.prototype.$ajax = axios
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
+  store,
   router: router,
   components: { App },
   render: h => h(App)
