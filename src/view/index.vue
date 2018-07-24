@@ -50,13 +50,7 @@
             </router-link>
           </Menu>
         </Sider>
-        <Layout :style="{padding: '0 24px 24px', height: '100%'}">
-          <router-link ref='tag' class="tags-view-item" v-for="tag in Array.from(visitedViews)"
-                       :to="tag.path" :key="tag.path">
-            <Tag :key="tag.path" type="dot" :closable="close" color="blue" @on-close="closeSelectedTag(tag)">{{ tag.title }}</Tag>
-          </router-link>
-        <keep-alive><router-view></router-view></keep-alive>
-        </Layout>
+        <router-view></router-view>
       </Layout>
     </Layout>
   </div>
@@ -64,27 +58,18 @@
 <script>
 import { formatDate } from '../utils/dateUtil.js'
 import axios from 'axios'
-import ScrollPane from '../components/ScrollPane'
+
 export default {
   name: 'index',
-  components: { ScrollPane },
   data () {
     return {
-      close: true,
       rules: [],
       currentTime: '',
       icon: 'ios-sunny-outline',
-      title: '',
-      top: 0,
-      left: 0,
-      selectedTag: {}
+      title: ''
     }
   },
   watch: {
-    $route () {
-      this.addViewTags()
-      this.moveToCurrentTag()
-    }
   },
   computed: {
     username () {
@@ -105,13 +90,9 @@ export default {
         hours = '凌晨好'
       }
       return hours + '，' + user.split('_')[0]
-    },
-    visitedViews () {
-      return this.$store.state.tagsView.visitedViews
     }
   },
   mounted () {
-    this.addViewTags()
     this.rules = JSON.parse(window.sessionStorage.getItem('rules'))
     this.refreshTime()
     let weather = window.localStorage.getItem('weather')
@@ -176,63 +157,6 @@ export default {
       this.$router.push({
         name: 'login'
       })
-    },
-    generateRoute () {
-      if (this.$route.name) {
-        return this.$route
-      }
-      return false
-    },
-    isActive (route) {
-      return route.path === this.$route.path
-    },
-    addViewTags () {
-      const route = this.generateRoute()
-      if (!route) {
-        return false
-      }
-      this.$store.dispatch('addVisitedViews', route)
-    },
-    moveToCurrentTag () {
-      const tags = this.$refs.tag
-      this.$nextTick(() => {
-        for (const tag of tags) {
-          if (tag.to === this.$route.path) {
-            this.$store.dispatch('delVisitedViews', tags)
-          }
-        }
-      })
-    },
-    closeSelectedTag (view) {
-      this.$store.dispatch('delVisitedViews', view).then((views) => {
-        if (this.isActive(view)) {
-          const latestView = views.slice(-1)[0]
-          if (latestView) {
-            this.$router.push(latestView.path)
-          } else {
-            this.$router.push('/')
-          }
-        }
-      })
-    },
-    closeOthersTags () {
-      this.$router.push(this.selectedTag.path)
-      this.$store.dispatch('delOthersViews', this.selectedTag).then(() => {
-        this.moveToCurrentTag()
-      })
-    },
-    closeAllTags () {
-      this.$store.dispatch('delAllViews')
-      this.$router.push('/')
-    },
-    openMenu (tag, e) {
-      this.visible = true
-      this.selectedTag = tag
-      this.left = e.clientX
-      this.top = e.clientY
-    },
-    closeMenu () {
-      this.visible = false
     }
   }
 }
@@ -258,11 +182,5 @@ export default {
   }
   .layout-menu {
     color: #495060;
-  }
-  .tags-view-wrapper {
-    background: #fff;
-    height: 34px;
-    border-bottom: 1px solid #d8dce5;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .12), 0 0 3px 0 rgba(0, 0, 0, .04);
   }
 </style>
