@@ -1,5 +1,6 @@
 <template>
-  <Layout :style="{padding: '0 24px 24px', height: '100%'}">
+  <!--<Layout :style="{padding: '0 24px 24px', height: '100%'}">-->
+  <div>
     <Breadcrumb :style="{margin: '24px 0'}">
       <BreadcrumbItem>图搜管理</BreadcrumbItem>
       <BreadcrumbItem>全量分类管理</BreadcrumbItem>
@@ -87,7 +88,8 @@
         </div>
       </Upload>
     </Modal>
-  </Layout>
+  </div>
+  <!--</Layout>-->
 </template>
 
 <script>

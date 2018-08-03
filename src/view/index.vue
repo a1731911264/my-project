@@ -50,7 +50,12 @@
             </router-link>
           </Menu>
         </Sider>
-        <router-view></router-view>
+        <Layout :style="{padding: '0 24px 24px', height: '100%'}">
+          <router-link v-for="router in Array.from(routerList)" :key="router.path" :to="router.path">
+            <Tag type="dot" :color="tagColor" :closable="tagClose" @on-close.prevent.stop="removeRouter"> {{ router.meta.title }}</Tag>
+          </router-link>
+          <router-view></router-view>
+        </Layout>
       </Layout>
     </Layout>
   </div>
@@ -66,10 +71,15 @@ export default {
       rules: [],
       currentTime: '',
       icon: 'ios-sunny-outline',
-      title: ''
+      title: '',
+      tagColor: '',
+      tagClose: ''
     }
   },
   watch: {
+    $route () {
+      if (this.$route.name) this.addRouterTag()
+    }
   },
   computed: {
     username () {
@@ -90,6 +100,9 @@ export default {
         hours = '凌晨好'
       }
       return hours + '，' + user.split('_')[0]
+    },
+    routerList () {
+      return this.$store.state.routers
     }
   },
   mounted () {
@@ -157,6 +170,12 @@ export default {
       this.$router.push({
         name: 'login'
       })
+    },
+    addRouterTag () {
+      this.$store.commit('ADD_ROUTER', this.$route)
+    },
+    removeRouter () {
+      this.$store.commit('RM_ROUTER', this.$route)
     }
   }
 }
